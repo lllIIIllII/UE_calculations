@@ -5,3 +5,5 @@ src/valid_urls.txt
 src/downloaded_images/*
 src/images_background_removed/*
 src/comfyui_amd_requirements
+
+*__pycache*
