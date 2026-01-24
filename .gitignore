@@ -1,9 +1,2 @@
-src/comfyui_amd_requirements
-src/names.txt
-src/ue_images.ipynb
-src/valid_urls.txt
-src/downloaded_images/*
-src/images_background_removed/*
-src/comfyui_amd_requirements
-
+img_stuff*
 *__pycache*

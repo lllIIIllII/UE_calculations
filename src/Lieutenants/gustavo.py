@@ -9,7 +9,8 @@ from typing import Dict
 class Gustavo(Lieutenant):
     id = "gustavo"
     faction = Faction.CARTEL
-    rarity = Rarity.EPIC  # Using your enum
+    rarity = Rarity.EPIC
+    ability_areas = [] 
 
     # Star-to-ability mapping
     star_params: Dict[int, Dict[str, float]] = {
@@ -23,16 +24,18 @@ class Gustavo(Lieutenant):
         8: {"crit_chance": 14.0, "crit_dmg": 81.0},
         9: {"crit_chance": 16.0, "crit_dmg": 98.0},
     }
-
-    def __init__(self, star: int):
-        super().__init__(star)
+        
+    def default_insignia_profile(self) -> dict:
+        return {
+            "crit_dmg": 0.02
+        }
 
     def build_ability_params(self) -> Dict[str, float]:
         """Return the ability parameters for the current star."""
         return self.star_params.get(self.star, {"crit_chance": 0, "crit_dmg": 0})
 
     def resolve_ability(
-        self, slot: int, ctx: "FactionCountContext", params: Dict[str, float], stats: "BlueFolderStats"
+        self, slot: int, ctx: "FactionCountContext", params: Dict[str, float], stats: "BlueFolderStats", gear
     ):
         """Apply Gustavo's ability to the Blue Folder stats."""
         stats.crit_chance += params["crit_chance"]

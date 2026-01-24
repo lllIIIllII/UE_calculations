@@ -16,11 +16,20 @@ class Faction(Enum):
     CARTEL = auto()
     SHADOW = auto()
     
-@dataclass
-class FactionCountContext:
-    account: Counter[Faction]
-    loadout: Counter[Faction]
-    virtual: Counter[Faction]  # from gear / other LTs
+class Area(Enum):
+    BLUE_FOLDER = auto()
+    PVP = auto()
+    BOSSING = auto()
+    EVE = auto()
     
+class FactionCountContext:
+    def __init__(self, account, loadout, virtual, flags=None):
+        self.account = account
+        self.loadout = loadout
+        self.virtual = virtual
+
     def total(self, faction: Faction) -> int:
-        return self.account[faction] + self.loadout[faction] + self.virtual[faction]
+        return (
+            self.account.get(faction, 0)
+            + self.virtual.get(faction, 0)
+        )

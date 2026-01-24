@@ -1,16 +1,25 @@
 from UE_core.loadout import BlueFolderStats
 from UE_core.utils import FactionCountContext, Faction
 
-from typing import Dict
+from typing import Dict, Any
 from abc import ABC, abstractmethod
 
 class GearModifier(ABC):
-    @abstractmethod
     def applies_to(self, lt_data: Dict) -> bool:
-        ...
+        return False
+        
+    def get_borrowed_faction_count(
+        self,
+        lt_data: dict,
+        ctx: FactionCountContext
+    ) -> dict[Faction, int]:
+        return {}
 
-    # modify Blue Folder stats
-    def apply_to_stats(self, stats: BlueFolderStats) -> None:
+    def apply_to_loadout_stats(
+        self,
+        stats: BlueFolderStats,
+        lieutenants: list[Any]
+    ):
         pass
 
     # modify faction context for the LT

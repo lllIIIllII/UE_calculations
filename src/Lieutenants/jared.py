@@ -2,6 +2,8 @@ from UE_core.lieutenant import Lieutenant
 from UE_core.loadout import BlueFolderStats
 from UE_core.utils import Rarity, Faction, FactionCountContext
 
+from Gear.cartel_insignia import CartelInsignia
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -34,9 +36,12 @@ class Jared(Lieutenant):
     id = "jared"
     faction = Faction.CARTEL
     rarity = Rarity.EPIC
-    
-    def __init__(self, star: int):
-        super().__init__(star)
+    ability_areas = [] 
+       
+    def default_insignia_profile(self) -> dict:
+        return {
+            "crit_chance": 1
+        }
 
     def build_ability_params(self) -> JaredAbilityParams:
         """
@@ -45,13 +50,15 @@ class Jared(Lieutenant):
         base = JARED_STAR_PARAMS.get(self.star, JARED_STAR_PARAMS[1])
         params = JaredAbilityParams(**base)
         return params
+    
 
     def resolve_ability(
         self,
         slot: int,
         ctx: "FactionCountContext",
         params: JaredAbilityParams,
-        stats: "BlueFolderStats"
+        stats: "BlueFolderStats",
+        gear,
     ):
         """
         Apply Jared's ability to Blue Folder stats.
@@ -62,10 +69,31 @@ class Jared(Lieutenant):
         """
 
         # Total counts include account, loadout, and virtual contributions
-        cartel_total = ctx.total(Faction.CARTEL)
+        # Base counts
+        cartel_count = ctx.account.get(Faction.CARTEL, 0)
+        shadow_count = ctx.account.get(Faction.SHADOW, 0)
 
-        # Formula: per-cartel bonus times counts
-        stats.dmg += params.dmg_per_cartel * cartel_total
+        # Determine cartel insignia multiplier from gear
+        cartel_multiplier = 1
+        for g in gear:
+            if isinstance(g, CartelInsignia) and g.applies_to(self.get_lt_data()):
+                # Apply formula: 2 + (num_cartels_in_loadout_after_first)
+                loadout_cartels = ctx.loadout.get(Faction.CARTEL, 0)
+                if loadout_cartels > 1:
+                    cartel_multiplier = 2 + (loadout_cartels - 1)
+                else:
+                    cartel_multiplier = 2
+                break  # assume only one insignia applies
+
+        # Check for any gear that adds borrowed shadow
+        borrowed_shadow = 0
+        for g in gear:
+            if g.applies_to(self.get_lt_data()):
+                borrowed_shadow += g.get_borrowed_faction_count(self.get_lt_data(), ctx).get(Faction.SHADOW, 0)
+
+        total_dmg = params.dmg_per_cartel * (cartel_count * cartel_multiplier + borrowed_shadow)
+
+        stats.dmg += total_dmg
 
     # Optional hooks for other LTs or gear to modify faction counts or ability params
     def apply_faction_context_modifier(self, ctx: "FactionCountContext"):
