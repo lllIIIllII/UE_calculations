@@ -4,6 +4,7 @@ from UE_core.utils import Faction, FactionCountContext
 from typing import Dict
 
 class ShadowInsignia(GearModifier):
+    display_name = "Shadow Insignia"
     def applies_to(self, lt_data: Dict) -> bool:
         # Applies to any SHADOW LT
         return lt_data["faction"] == Faction.SHADOW  # can use lt_data["faction"] if enum

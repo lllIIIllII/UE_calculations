@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from dataclasses import dataclass
-from collections import Counter
+from collections import defaultdict
 
 class Rarity(Enum):
     COMMON = auto()
@@ -22,11 +22,12 @@ class Area(Enum):
     BOSSING = auto()
     EVE = auto()
     
+    
 class FactionCountContext:
-    def __init__(self, account, loadout, virtual, flags=None):
+    def __init__(self, account, loadout, virtual=None, flags=None):
         self.account = account
         self.loadout = loadout
-        self.virtual = virtual
+        self.virtual = virtual if virtual is not None else defaultdict(float)
 
     def total(self, faction: Faction) -> int:
         return (

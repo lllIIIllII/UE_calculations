@@ -7,9 +7,17 @@ from Simulation.new_boss_simulation import simulate_damage
 from Lieutenants.jared import Jared
 from Lieutenants.gustavo import Gustavo
 from Lieutenants.tanya import Tanya
+from Lieutenants.yugo import Yugo
+from Lieutenants.collector import Collector
+from Lieutenants.silas import Silas
+from Lieutenants.overkill import Overkill
+from Lieutenants.slaughterer import Slaughterer
+from Lieutenants.maddox import Maddox
 
 from Gear.cartel_insignia import CartelInsignia
 from Gear.cartel_medallion import CartelMedallion
+from Gear.street_insignia import StreetInsignia
+from Gear.street_medallion import StreetMedallion
 from Gear.phantom_claw import PantomClaw
 from Gear.thanatos_mortar import ThanatosMortar
 
@@ -18,9 +26,9 @@ import pandas as pd
 if __name__ == "__main__":
 
     account_80_percent = Account({
-        Faction.STREET: 72,
-        Faction.SYNDICATE: 61,
-        Faction.MAFIA: 80,
+        Faction.STREET: 68,
+        Faction.SYNDICATE: 53,
+        Faction.MAFIA: 76,
         Faction.CARTEL: 63,
         Faction.SHADOW: 76,
     })
@@ -37,14 +45,40 @@ if __name__ == "__main__":
         star=5,
         insignia_profile={"crit_chance": 1}
     )
+    yugo = Yugo(
+        star=9,
+        insignia_profile={"crit_chance": 1}
+    )
+    collector = Collector(
+        star=5,
+        insignia_profile={"crit_chance": 1}
+    )
+    silas = Silas(
+        star=5,
+        insignia_profile={"crit_chance": 1}
+    )
+    overkill = Overkill(
+        star=5,
+        insignia_profile={"crit_chance": 1}
+    )
+    slaughterer = Slaughterer(
+        star=5,
+        insignia_profile={"crit_chance": 1}
+    )
+    maddox = Maddox(
+        star=5,
+        insignia_profile={"crit_chance": 1}
+    )
     loadout = Loadout(
-        [jared, gustavo, tanya], 
+        [jared, gustavo, tanya, slaughterer, collector], 
         account_80_percent, 
         gear=[
             CartelInsignia(), 
             CartelMedallion(),
             PantomClaw(),
-            ThanatosMortar()
+            ThanatosMortar(),
+            StreetInsignia(),
+            StreetMedallion()
             ]
         )
     loadout.evaluate()

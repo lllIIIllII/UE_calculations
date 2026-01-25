@@ -2,7 +2,7 @@ from UE_core.lieutenant import Lieutenant
 from UE_core.loadout import BlueFolderStats
 from UE_core.utils import Rarity, Faction, FactionCountContext
 
-from Gear.cartel_insignia import CartelInsignia
+from Gear.street_insignia import StreetInsignia
 
 from dataclasses import dataclass
 from typing import Any
@@ -11,30 +11,30 @@ from typing import Any
 # Ability parameters class
 # -------------------------
 @dataclass
-class JaredAbilityParams:
-    dmg_per_cartel: float = 0.0055  # base 0.55%
+class SlaughtererAbilityParams:
+    dmg_per_street: float = 0.0055  # base 0.55%
 
 # -------------------------
-# Jared star scaling table
+# Slaughterer star scaling table
 # -------------------------
-JARED_STAR_PARAMS = {
-    1: {"dmg_per_cartel": 0.1},
-    2: {"dmg_per_cartel": 0.15},
-    3: {"dmg_per_cartel": 0.2},
-    4: {"dmg_per_cartel": 0.25},
-    5: {"dmg_per_cartel": 0.35},
-    6: {"dmg_per_cartel": 0.45},
-    7: {"dmg_per_cartel": 0.55},
-    8: {"dmg_per_cartel": 0.65},
-    9: {"dmg_per_cartel": 0.8},
+SLAUGHTERER_STAR_PARAMS = {
+    1: {"dmg_per_street": 0.1},
+    2: {"dmg_per_street": 0.15},
+    3: {"dmg_per_street": 0.2},
+    4: {"dmg_per_street": 0.3},
+    5: {"dmg_per_street": 0.4},
+    6: {"dmg_per_street": 0.5},
+    7: {"dmg_per_street": 0.65},
+    8: {"dmg_per_street": 0.8},
+    9: {"dmg_per_street": 1.0},
 }
 
 # -------------------------
-# Jared Lieutenant class
+# Slaughterer Lieutenant class
 # -------------------------
-class Jared(Lieutenant):
-    id = "jared"
-    faction = Faction.CARTEL
+class Slaughterer(Lieutenant):
+    id = "slaughterer"
+    faction = Faction.STREET
     rarity = Rarity.EPIC
     ability_areas = [] 
        
@@ -43,12 +43,12 @@ class Jared(Lieutenant):
             "crit_chance": 1
         }
 
-    def build_ability_params(self) -> JaredAbilityParams:
+    def build_ability_params(self) -> SlaughtererAbilityParams:
         """
         Build base ability parameters based on star, before gear or other LT modifications.
         """
-        base = JARED_STAR_PARAMS.get(self.star, JARED_STAR_PARAMS[1])
-        params = JaredAbilityParams(**base)
+        base = SLAUGHTERER_STAR_PARAMS.get(self.star, SLAUGHTERER_STAR_PARAMS[1])
+        params = SlaughtererAbilityParams(**base)
         return params
     
 
@@ -56,13 +56,13 @@ class Jared(Lieutenant):
         self,
         slot: int,
         ctx: "FactionCountContext",
-        params: JaredAbilityParams,
+        params: SlaughtererAbilityParams,
         stats: "BlueFolderStats",
         gear,
         other_lts: list["Lieutenant"] = None,
     ):
         """
-        Apply Jared's ability to Blue Folder stats.
+        Apply Slaughterer's ability to Blue Folder stats.
         Reads:
         - self.star (for thresholds)
         - params (may be modified by gear or other LTs)
@@ -71,7 +71,7 @@ class Jared(Lieutenant):
 
         # Total counts include account, loadout, and virtual contributions
         # Base counts
-        cartel_count = ctx.total(Faction.CARTEL)
+        street_count = ctx.total(Faction.STREET)
 
         # Check for any gear that adds borrowed shadow
         borrowed_shadow = 0
@@ -81,19 +81,19 @@ class Jared(Lieutenant):
                 if shadow_bonus > 0:  # only count gear that actually adds shadow
                     borrowed_shadow += shadow_bonus
 
-        total_dmg = params.dmg_per_cartel * (cartel_count + borrowed_shadow)
+        total_dmg = params.dmg_per_street * (street_count + borrowed_shadow)
 
-        stats.dmg += total_dmg
+        stats.crit_dmg += total_dmg
 
     # Optional hooks for other LTs or gear to modify faction counts or ability params
     def apply_faction_context_modifier(self, ctx: "FactionCountContext"):
         """
-        Other LTs may override this to modify the context seen by Jared.
+        Other LTs may override this to modify the context seen by Slaughterer.
         """
         pass
 
     def apply_ability_param_modifier(self, target: "Lieutenant", params: Any):
         """
-        Other LTs may override this to modify Jared's ability parameters.
+        Other LTs may override this to modify Slaughterer's ability parameters.
         """
         pass

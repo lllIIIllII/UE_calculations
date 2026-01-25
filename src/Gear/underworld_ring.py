@@ -3,8 +3,8 @@ from UE_core.lieutenant import Lieutenant
 from UE_core.stats import BlueFolderStats
 from UE_core.utils import Rarity
 
-class PantomClaw(GearModifier):
-    display_name = "Phantom Claw"
+class UnderworldRing(GearModifier):
+    display_name = "Underworld Ring"
     def apply_to_loadout_stats(
         self,
         stats: BlueFolderStats,
@@ -14,4 +14,4 @@ class PantomClaw(GearModifier):
             1 for lt in lieutenants if lt.rarity == Rarity.EPIC
         )
 
-        stats.crit_chance += 3 * epic_count
+        stats.crit_dmg += 5 * epic_count

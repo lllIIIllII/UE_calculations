@@ -5,6 +5,7 @@ from typing import Dict
 from collections import Counter
 
 class CartelInsignia(GearModifier):
+    display_name = "Cartel Insignia"
     def applies_to(self, lt_data: Dict) -> bool:
         # Applies to any CARTEL LT
         return lt_data["faction"] == Faction.CARTEL  # can use lt_data["faction"] if enum

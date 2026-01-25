@@ -37,7 +37,7 @@ def simulate_damage(
 
     for _ in range(num_hits):
         hit_ctx: dict = {}
-        damage = base_damage * (1 + blue_stats.dmg / 100)
+        damage = base_damage * (1 + percent_damage_mod)
 
         # 1️⃣ Pre-crit modifiers
         for lt in loadout.lieutenants:
@@ -45,7 +45,7 @@ def simulate_damage(
                 damage = lt.pre_crit(damage, hit_ctx)
 
         # 2️⃣ Determine crit
-        is_crit = random.random() < blue_stats.crit_chance / 100
+        is_crit = random.random() < crit_chance
         hit_ctx["IsCrit"] = is_crit
 
         # Prepare for per-crit bonus
@@ -57,7 +57,11 @@ def simulate_damage(
 
         if is_crit:
             # Base crit damage
-            crit_bonus = damage * (blue_stats.crit_dmg / 100)
+            if random.random() > 0.5:
+                base_crit_dmg = 2.0
+            else:
+                base_crit_dmg = 3.0
+            crit_bonus = (damage * (1 + base_crit_dmg + crit_damage)) - damage
 
             # Crit-only LT hooks (e.g., Overkill)
             for lt in loadout.lieutenants:
@@ -89,6 +93,10 @@ def simulate_damage(
         for lt in loadout.lieutenants:
             if hasattr(lt, "finalize"):
                 damage = lt.finalize(damage, hit_ctx)
+                
+        # dirty inject, simulate sks
+        if random.random() < 0.1:
+            damage *= 3
 
         hits.append(damage)
         proc_data.append(hit_ctx)

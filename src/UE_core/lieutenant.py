@@ -70,8 +70,12 @@ class Lieutenant:
         ctx = FactionCountContext(
             account=account_factions.copy(),
             loadout=loadout_factions.copy(),
-            virtual={},
         )
+        
+        # Let ALL LTs modify faction context (Yugo lives here)
+        for lt in other_lts + [self]:
+            if hasattr(lt, "apply_faction_context_modifier"):
+                lt.apply_faction_context_modifier(ctx)
 
         gear = gear or []
         other_lts = other_lts or []
@@ -82,9 +86,7 @@ class Lieutenant:
 
         params = self.build_ability_params()
         
-        if area == Area.BLUE_FOLDER:
-            self.resolve_ability(slot, ctx, params, stats, gear, other_lts)
-        elif area in self.ability_areas:
+        if area in self.ability_areas and area != Area.BLUE_FOLDER:
             self.resolve_ability_area(area, slot, ctx, params, stats, gear, other_lts)
         self.apply_insignias(stats)
 
@@ -94,26 +96,47 @@ class Lieutenant:
     def get_blue_folder_stats(
         self,
         slot: int,
-        loadout_factions: dict,
-        account_factions: dict,
-        gear: list = None,
-        other_lts: list = None,
+        loadout_factions: Counter,
+        account_factions: Counter,
+        gear: Optional[list["GearModifier"]] = None,
+        other_lts: Optional[list] = None,
     ) -> BlueFolderStats:
-        if gear is None:
-            gear = []
-        if other_lts is None:
-            other_lts = []
+
+        gear = gear or []
+        other_lts = other_lts or []
 
         stats = BlueFolderStats()
-        params = self.build_ability_params()
 
         ctx = FactionCountContext(
-            loadout=loadout_factions,
-            virtual={},
-            account=account_factions
+            account=account_factions.copy(),
+            loadout=loadout_factions.copy(),
         )
 
-        self.resolve_ability(slot=slot, ctx=ctx, params=params, stats=stats, gear=gear)
+        # Gear-based context modifiers
+        for g in gear:
+            if g.applies_to(self.get_lt_data()):
+                g.apply_to_faction_context(ctx)
+                
+        # LT-based context modifiers (Yugo etc.)
+        for lt in other_lts + [self]:
+            if hasattr(lt, "apply_faction_context_modifier"):
+                lt.apply_faction_context_modifier(ctx)
+
+        # Ability params
+        params = self.build_ability_params()
+
+        # Resolve ability
+        self.resolve_ability(
+            slot=slot,
+            ctx=ctx,
+            params=params,
+            stats=stats,
+            gear=gear,
+        )
+
+        # 5️⃣ Insignias
+        self.apply_insignias(stats)
+
         return stats
 
     def build_ability_params(self):

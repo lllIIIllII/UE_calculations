@@ -4,6 +4,7 @@ from UE_core.stats import BlueFolderStats
 from UE_core.utils import Rarity
 
 class ThanatosMortar(GearModifier):
+    display_name = "Thanatos Mortar"
     def apply_to_loadout_stats(
         self,
         stats: BlueFolderStats,
