@@ -14,11 +14,15 @@ class Loadout:
             self, 
             lieutenants: list[Lieutenant],
             account: Account, 
+            crit_chance_override: Optional[float] = None,
+            sk_added_crit_chance: Optional[float] = None,
             gear: Optional[list[GearModifier]] = None
         ):
         self.lieutenants = lieutenants
         self.gear = gear if gear is not None else []
         self.account = account
+        self.crit_chance_override = crit_chance_override
+        self.sk_added_crit_chance = sk_added_crit_chance
         self.blue_folder_stats = BlueFolderStats()
 
         # Local faction counts
@@ -40,6 +44,12 @@ class Loadout:
         for g in self.gear:
             if hasattr(g, "apply_to_loadout_stats"):
                 g.apply_to_loadout_stats(self.blue_folder_stats, self.lieutenants)
+                
+        if self.crit_chance_override is not None:
+            self.blue_folder_stats.crit_chance = self.crit_chance_override
+            
+        if self.sk_added_crit_chance is not None:
+            self.blue_folder_stats.crit_chance += self.sk_added_crit_chance
             
     def evaluate_area(self, area: Area):
         area_stats = BlueFolderStats()

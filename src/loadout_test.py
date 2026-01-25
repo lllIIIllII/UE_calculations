@@ -70,8 +70,9 @@ if __name__ == "__main__":
         insignia_profile={"crit_chance": 1}
     )
     loadout = Loadout(
-        [jared, gustavo, tanya, slaughterer, collector], 
+        [overkill], 
         account_80_percent, 
+        crit_chance_override=100,
         gear=[
             CartelInsignia(), 
             CartelMedallion(),
@@ -91,11 +92,14 @@ if __name__ == "__main__":
     
     df_hits = pd.DataFrame(hits, columns=['Damage'])
     df_proc_data = pd.DataFrame(proc_data)
+    
+    
 
     # Basic statistics
     print(df_hits.describe())
     print("\n")
     print(df_proc_data.value_counts())
+    
 
     print(f"Blue Folder stats for loadout:")
     print(f"Dmg: {loadout.blue_folder_stats.dmg:.4f}")

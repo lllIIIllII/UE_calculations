@@ -1,7 +1,7 @@
 # UE calculations and simulations
 
-more stuff to follow soon 
-
 ## Boss hit/damage simulation
 
-This [Notebook](src\boss_hits_simulation.ipynb) should be self explanatory, you will need to look up your blue folder dmg, crit and crit dmg stats and fill out star related numbers for the special lts and sks.
+Use this [file](src\loadout_test.py) to test single specific setups
+
+adjust parameters in [here](src\boss_setup_gridsearch.py) to mess with the big setup gridsearch. You can mess with insignia profiles, which lts at which star and which gear is supposed to be used for the simulations

@@ -25,6 +25,8 @@ from Gear.street_insignia import StreetInsignia
 from Gear.street_medallion import StreetMedallion
 from Gear.phantom_claw import PantomClaw
 from Gear.thanatos_mortar import ThanatosMortar
+from Gear.underworld_crown import UnderworldCrown
+from Gear.underworld_ring import UnderworldRing
 
 def compute_gridsearch():
     account_100_percent = Account({
@@ -36,7 +38,7 @@ def compute_gridsearch():
     })
 
     all_lts = [
-        Jared(star=5, insignia_profile={"crit_chance": 1}),
+        Jared(star=7, insignia_profile={"crit_chance": 1}),
         Gustavo(star=5, insignia_profile={"crit_chance": 1}),
         Tanya(star=5, insignia_profile={"crit_chance": 1}),
         Yugo(star=9, insignia_profile={"crit_chance": 1}),
@@ -53,7 +55,9 @@ def compute_gridsearch():
         PantomClaw(),
         ThanatosMortar(),
         StreetInsignia(),
-        StreetMedallion()
+        StreetMedallion(),
+        UnderworldCrown(),
+        UnderworldRing()
     ]
     
     gear_names = sorted(g.display_name for g in gear_list)
@@ -66,7 +70,7 @@ def compute_gridsearch():
 
     for combo in tqdm(combos, desc="Evaluating loadouts"):
         # Build loadout
-        loadout = Loadout(list(combo), account_100_percent, gear=gear_list)
+        loadout = Loadout(list(combo), account_100_percent, gear=gear_list, sk_added_crit_chance=15)
         
         # 1️⃣ Compute deterministic Blue Folder stats
         loadout.evaluate()

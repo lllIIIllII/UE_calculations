@@ -93,12 +93,9 @@ def simulate_damage(
         for lt in loadout.lieutenants:
             if hasattr(lt, "finalize"):
                 damage = lt.finalize(damage, hit_ctx)
-                
-        # dirty inject, simulate sks
-        if random.random() < 0.1:
-            damage *= 3
 
         hits.append(damage)
+        hit_ctx["damage"] = damage
         proc_data.append(hit_ctx)
 
     return hits, proc_data
