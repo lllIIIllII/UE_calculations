@@ -58,9 +58,9 @@ def simulate_damage(
         if is_crit:
             # Base crit damage
             if random.random() > 0.5:
-                base_crit_dmg = 2.0
+                base_crit_dmg = 1.0
             else:
-                base_crit_dmg = 3.0
+                base_crit_dmg = 2.0
             crit_bonus = (damage * (1 + base_crit_dmg + crit_damage)) - damage
 
             # Crit-only LT hooks (e.g., Overkill)
