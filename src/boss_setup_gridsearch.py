@@ -16,6 +16,7 @@ from Lieutenants.yugo import Yugo
 from Lieutenants.collector import Collector
 from Lieutenants.silas import Silas
 from Lieutenants.overkill import Overkill
+from Lieutenants.cole import Cole
 from Lieutenants.slaughterer import Slaughterer
 from Lieutenants.maddox import Maddox
 
@@ -30,23 +31,24 @@ from Gear.underworld_ring import UnderworldRing
 
 def compute_gridsearch():
     account_100_percent = Account({
-        Faction.STREET: 68,
-        Faction.SYNDICATE: 53,
-        Faction.MAFIA: 76,
+        Faction.STREET: 70,
+        Faction.SYNDICATE: 54,
+        Faction.MAFIA: 78,
         Faction.CARTEL: 63,
         Faction.SHADOW: 76,
     })
 
     all_lts = [
-        Jared(star=7, insignia_profile={"crit_chance": 1}),
-        Gustavo(star=5, insignia_profile={"crit_chance": 1}),
-        Tanya(star=5, insignia_profile={"crit_chance": 1}),
+        Jared(star=6, insignia_profile={"crit_chance": 1}),
+        Gustavo(star=4, insignia_profile={"crit_chance": 1}),
+        Tanya(star=6, insignia_profile={"crit_chance": 1}),
         Yugo(star=9, insignia_profile={"crit_chance": 1}),
-        Collector(star=5, insignia_profile={"crit_chance": 1}),
-        Silas(star=5, insignia_profile={"crit_chance": 1}),
-        Overkill(star=5, insignia_profile={"crit_chance": 1}),
+        Collector(star=4, insignia_profile={"crit_chance": 1}),
+        Silas(star=4, insignia_profile={"crit_chance": 1}),
+        Overkill(star=4, insignia_profile={"crit_chance": 1}),
         Slaughterer(star=5, insignia_profile={"crit_chance": 1}),
         Maddox(star=5, insignia_profile={"crit_chance": 1}),
+        Cole(star=5, insignia_profile={"crit_chance": 1})
     ]
 
     gear_list = [
@@ -70,7 +72,7 @@ def compute_gridsearch():
 
     for combo in tqdm(combos, desc="Evaluating loadouts"):
         # Build loadout
-        loadout = Loadout(list(combo), account_100_percent, gear=gear_list, sk_added_crit_chance=15)
+        loadout = Loadout(list(combo), account_100_percent, gear=gear_list, sk_added_crit_chance=10)
         
         # 1️⃣ Compute deterministic Blue Folder stats
         loadout.evaluate()
