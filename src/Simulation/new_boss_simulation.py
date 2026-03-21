@@ -1,24 +1,34 @@
 import random
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 from UE_core.loadout import Loadout
 from UE_core.lieutenant import Lieutenant
 from UE_core.utils import Area  # Area enum we defined earlier
 from UE_core.gear import GearModifier
 
+
 def simulate_damage(
     loadout: Loadout,
     base_damage: float = 10.0,
-    num_hits: int = 100_000
-) -> Tuple[List[float], List[Dict[str, float]]]:
+    num_hits: int = 100_000,
+    base_cost: float = 1.0,
+    allow_free_cost_chains: bool = False,
+    max_chain: int = 50,
+    return_chain_data: bool = False,
+) -> Union[
+    Tuple[List[float], List[Dict[str, float]]],
+    Tuple[List[float], List[Dict[str, float]], List[Dict[str, float]]],
+]:
     """
     Simulate damage for a loadout using per-hit random simulation.
-    
+
     Pulls crit chance, crit damage, and ability multipliers from each LT and gear.
     Supports abilities that apply to specific areas (Bossing, EvE, PvP) and
     separate hooks for:
         - Crit bonus only (Overkill)
         - Full-hit crit multipliers (Tanya, Collector)
         - Non-crit procs (Silas)
+    When allow_free_cost_chains is enabled and return_chain_data is True,
+    returns (hits, per_hit_proc_data, chain_data).
     """
 
     # --- Precompute loadout stats (Blue Folder + loadout-wide gear) ---
@@ -34,17 +44,18 @@ def simulate_damage(
 
     hits: List[float] = []
     proc_data: List[Dict[str, float]] = []
+    chain_data: List[Dict[str, float]] = []
 
-    for _ in range(num_hits):
+    def simulate_single_hit() -> tuple[float, float, dict]:
         hit_ctx: dict = {}
         damage = base_damage * (1 + percent_damage_mod)
 
-        # 1️⃣ Pre-crit modifiers
+        # 1. Pre-crit modifiers
         for lt in loadout.lieutenants:
             if hasattr(lt, "pre_crit"):
                 damage = lt.pre_crit(damage, hit_ctx)
 
-        # 2️⃣ Determine crit
+        # 2. Determine crit
         is_crit = random.random() < crit_chance
         hit_ctx["IsCrit"] = is_crit
 
@@ -76,26 +87,72 @@ def simulate_damage(
                     # crit_bonus already applied inside hook
                     crit_bonus = 0.0  # avoid double counting
 
-        # 3️⃣ Combine base + crit bonus
+        # 3. Combine base + crit bonus
         damage += crit_bonus
 
-        # 4️⃣ Non-crit procs
+        # 4. Non-crit procs
         for lt in loadout.lieutenants:
             if hasattr(lt, "on_proc"):
                 damage = lt.on_proc(damage, hit_ctx)
 
-        # 5️⃣ Loadout-wide per-hit gear
+        # 5. Loadout-wide per-hit gear
         for g in loadout.gear:
             if hasattr(g, "apply_to_hit"):
                 damage = g.apply_to_hit(damage, hit_ctx)
 
-        # 6️⃣ Finalize
+        # 6. Per-hit cost (separate from damage math)
+        cost = base_cost
+        for lt in loadout.lieutenants:
+            if hasattr(lt, "on_cost"):
+                cost = lt.on_cost(cost, hit_ctx)
+        hit_ctx["cost"] = cost
+
+        # 7. Finalize
         for lt in loadout.lieutenants:
             if hasattr(lt, "finalize"):
                 damage = lt.finalize(damage, hit_ctx)
 
-        hits.append(damage)
         hit_ctx["damage"] = damage
-        proc_data.append(hit_ctx)
+        return damage, cost, hit_ctx
 
+    for _ in range(num_hits):
+        if allow_free_cost_chains:
+            chain_damage = 0.0
+            chain_cost = 0.0
+            chain_len = 0
+            free_hits = 0
+
+            while True:
+                damage, cost, hit_ctx = simulate_single_hit()
+                chain_damage += damage
+                chain_cost += cost
+                chain_len += 1
+                if cost == 0:
+                    free_hits += 1
+                if return_chain_data:
+                    proc_data.append(hit_ctx)
+
+                if cost > 0 or chain_len >= max_chain:
+                    break
+
+            hits.append(chain_damage)
+            chain_entry = {
+                "chain_len": chain_len,
+                "free_hits": free_hits,
+                "total_cost": chain_cost,
+            }
+
+            if return_chain_data:
+                # Preserve per-hit proc data and return chain metadata separately.
+                chain_data.append(chain_entry)
+            else:
+                # Default: return chain summary instead of per-hit proc data.
+                proc_data.append(chain_entry)
+        else:
+            damage, cost, hit_ctx = simulate_single_hit()
+            hits.append(damage)
+            proc_data.append(hit_ctx)
+
+    if allow_free_cost_chains and return_chain_data:
+        return hits, proc_data, chain_data
     return hits, proc_data

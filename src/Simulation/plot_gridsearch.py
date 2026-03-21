@@ -28,7 +28,7 @@ def plot_gridsearch(df_results: pd.DataFrame, filter_by):
 
     for idx, row in df_results.iterrows():
         results_summary["lts"].append(row["lt_combo"])
-        results_summary["mean_dmg"].append(row["sim_mean_dmg"])
+        results_summary["mean_dmg"].append(row["sim_mean_eff_dmg"])
         results_summary["median_dmg"].append(row["sim_median_dmg"])
         results_summary["std_dev_damage"].append(row["sim_std_dmg"])
 
