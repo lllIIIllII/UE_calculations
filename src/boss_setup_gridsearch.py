@@ -29,6 +29,20 @@ from Gear.phantom_claw import PantomClaw
 from Gear.thanatos_mortar import ThanatosMortar
 from Gear.underworld_crown import UnderworldCrown
 from Gear.underworld_ring import UnderworldRing
+from Gear.collector.flame_time import FlameTime
+from Gear.collector.gilded_obsidian import GildedObsidian
+from Gear.gustavo.tohil import Tohil
+from Gear.overkill.megakill import Megakill
+from Gear.overkill.overkills_body_armor import OverkillsBodyArmor
+from Gear.overkill.ultrakill import Ultrakill
+from Gear.silas.bullet_storm import BulletStorm
+from Gear.silas.pulse_breaker import PulseBreaker
+from Gear.silas.scythe_claw import ScytheClaw
+from Gear.tanya.flaming_heart import FlamingHeart
+from Gear.tanya.grisha import Grisha
+from Gear.tanya.nightfang import Nightfang
+from Gear.tanya.nightshade_grips import NightshadeGrips
+from Gear.tanya.obsidian_edge import ObsidianEdge
 
 
 def compute_gridsearch():
@@ -77,8 +91,20 @@ def compute_gridsearch():
         UnderworldRing(),
     ]
 
-    gear_names = sorted(g.display_name for g in gear_list)
-    gear_combo = "+".join(gear_names)
+    generic_gear_names = sorted(
+        g.display_name for g in gear_list if not g.display_name.startswith("(")
+    )
+    lt_specific_gear_names = sorted(
+        g.display_name for g in gear_list if g.display_name.startswith("(")
+    )
+    gear_combo = "+".join(generic_gear_names)
+
+    lt_pool = ", ".join(
+        f"{lt.id} {lt.star}*"
+        for lt in sorted(all_lts, key=lambda lt: lt.id)
+    )
+
+    lt_specific_gear_combo = "+".join(lt_specific_gear_names)
 
     results = []
 
@@ -112,6 +138,8 @@ def compute_gridsearch():
         results.append({
             "lt_combo": ", ".join(sorted(lt.id for lt in loadout_lts)),
             "gear_combo": gear_combo,
+            "lt_pool": lt_pool,
+            "lt_specific_gear_combo": lt_specific_gear_combo,
             "bf_dmg": bf_stats.dmg,
             "bf_crit_chance": bf_stats.crit_chance,
             "bf_crit_dmg": bf_stats.crit_dmg,

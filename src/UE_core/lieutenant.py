@@ -84,7 +84,7 @@ class Lieutenant:
             if g.applies_to(self.get_lt_data()):
                 g.apply_to_faction_context(ctx)
 
-        params = self.build_ability_params()
+        params = self.get_modified_ability_params(gear)
         
         if area in self.ability_areas and area != Area.BLUE_FOLDER:
             self.resolve_ability_area(area, slot, ctx, params, stats, gear, other_lts)
@@ -122,8 +122,8 @@ class Lieutenant:
             if hasattr(lt, "apply_faction_context_modifier"):
                 lt.apply_faction_context_modifier(ctx)
 
-        # Ability params
-        params = self.build_ability_params()
+        # Ability params (ability altering gear applies here)
+        params = self.get_modified_ability_params(gear)
 
         # Resolve ability
         self.resolve_ability(
@@ -141,6 +141,13 @@ class Lieutenant:
 
     def build_ability_params(self):
         return object()  # placeholder for concrete LT
+
+    def get_modified_ability_params(self, gear: Optional[list["GearModifier"]] = None):
+        params = self.build_ability_params()
+        for g in gear or []:
+            if g.applies_to(self.get_lt_data()):
+                g.apply_to_ability_params(params)
+        return params
 
     def resolve_ability(
         self,

@@ -1,11 +1,24 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def format_gear_multiline(gear_combo, max_per_line=3):
-    gear_items = gear_combo.split("+")
+def format_items_multiline(items_text, max_per_line=3):
+    if not items_text:
+        return "None"
+    gear_items = items_text.split("+")
     lines = [
         ", ".join(gear_items[i:i + max_per_line])
         for i in range(0, len(gear_items), max_per_line)
+    ]
+    return "\n".join(lines)
+
+
+def format_comma_list_multiline(items_text, max_per_line=3):
+    if not items_text:
+        return "None"
+    items = items_text.split(", ")
+    lines = [
+        ", ".join(items[i:i + max_per_line])
+        for i in range(0, len(items), max_per_line)
     ]
     return "\n".join(lines)
 
@@ -41,7 +54,7 @@ def plot_gridsearch(df_results: pd.DataFrame, filter_by):
     top5_value = summary_sorted[filter_key].nlargest(5).min()
     top1_value = summary_sorted[filter_key].max()
 
-    plt.figure(figsize=(10, 12))
+    plt.figure(figsize=(13, 15))
 
     bars = []
     for lts, value, std in zip(
@@ -92,10 +105,15 @@ def plot_gridsearch(df_results: pd.DataFrame, filter_by):
             bbox=dict(facecolor="white", edgecolor="none", pad=0.5, alpha=1)
         )
         
-    gear_text = format_gear_multiline(df_results["gear_combo"].iloc[0])
+    gear_text = format_items_multiline(df_results["gear_combo"].iloc[0])
+    lt_pool_text = format_comma_list_multiline(df_results["lt_pool"].iloc[0], max_per_line=2)
+    lt_specific_gear_text = format_items_multiline(
+        df_results["lt_specific_gear_combo"].iloc[0],
+        max_per_line=2
+    )
 
     plt.figtext(
-        0.2, 0.08,
+        0.16, 0.095,
         f"Gear Used:\n{gear_text}",
         ha="center",
         va="top",
@@ -103,5 +121,23 @@ def plot_gridsearch(df_results: pd.DataFrame, filter_by):
         bbox=dict(facecolor="white", edgecolor="gray", alpha=0.9)
     )
 
-    plt.tight_layout()
+    plt.figtext(
+        0.5, 0.095,
+        f"LTs In Big Comparison:\n{lt_pool_text}",
+        ha="center",
+        va="top",
+        fontsize=9,
+        bbox=dict(facecolor="white", edgecolor="gray", alpha=0.9)
+    )
+
+    plt.figtext(
+        0.84, 0.095,
+        f"LT-Specific Gear:\n{lt_specific_gear_text}",
+        ha="center",
+        va="top",
+        fontsize=9,
+        bbox=dict(facecolor="white", edgecolor="gray", alpha=0.9)
+    )
+
+    plt.tight_layout(rect=[0, 0.11, 1, 1])
     plt.show()

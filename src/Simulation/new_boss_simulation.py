@@ -77,12 +77,12 @@ def simulate_damage(
             # Crit-only LT hooks (e.g., Overkill)
             for lt in loadout.lieutenants:
                 if hasattr(lt, "on_crit_bonus"):
-                    crit_bonus = lt.on_crit_bonus(damage, crit_bonus, hit_ctx)
+                    crit_bonus = lt.on_crit_bonus(damage, crit_bonus, hit_ctx, gear=loadout.gear)
 
             # Full-hit crit multipliers (Tanya, Collector)
             for lt in loadout.lieutenants:
                 if hasattr(lt, "on_full_crit_hit"):
-                    damage, proc_flag = lt.on_full_crit_hit(damage + crit_bonus, hit_ctx)
+                    damage, proc_flag = lt.on_full_crit_hit(damage + crit_bonus, hit_ctx, gear=loadout.gear)
                     hit_ctx[f"{lt.id}_proc"] = proc_flag
                     # crit_bonus already applied inside hook
                     crit_bonus = 0.0  # avoid double counting

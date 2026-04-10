@@ -48,13 +48,13 @@ class Tanya(Lieutenant):
         multiplier = TANYA_STAR_MULTIPLIERS.get(self.star, TANYA_STAR_MULTIPLIERS[1])
         return TanyaAbilityParams(crit_multiplier=multiplier, proc_chance=30.0)
 
-    def on_full_crit_hit(self, damage: float, ctx: dict) -> tuple[float, bool]:
+    def on_full_crit_hit(self, damage: float, ctx: dict, gear=None) -> tuple[float, bool]:
         """
         Called by the simulation when a crit occurs.
         Applies Tanya's chance-based multiplier to the full hit.
         Returns modified damage and whether the proc occurred.
         """
-        params = self.build_ability_params()
+        params = self.get_modified_ability_params(gear)
         proc_occurred = random.random() < params.proc_chance / 100
         if proc_occurred:
             damage *= params.crit_multiplier

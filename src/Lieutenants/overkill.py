@@ -37,12 +37,12 @@ class Overkill(Lieutenant):
         """Add crit bonus to Blue Folder stats only."""
         stats.crit_chance += params.crit_bonus
 
-    def on_crit_bonus(self, damage: float, crit_extra: float, hit_ctx: dict) -> float:
+    def on_crit_bonus(self, damage: float, crit_extra: float, hit_ctx: dict, gear=None) -> float:
         """
         Called after crit is calculated. Applies the Overkill chain multiplier
         to the crit bonus part of the damage.
         """
-        params = self.build_ability_params()
+        params = self.get_modified_ability_params(gear)
         ok_proc_occurred = False
         ok_proc_depth = 0
         multiplier = 1

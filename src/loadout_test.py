@@ -22,6 +22,20 @@ from Gear.street_medallion import StreetMedallion
 from Gear.phantom_claw import PantomClaw
 from Gear.thanatos_mortar import ThanatosMortar
 from Gear.underworld_crown import UnderworldCrown
+from Gear.collector.flame_time import FlameTime
+from Gear.collector.gilded_obsidian import GildedObsidian
+from Gear.gustavo.tohil import Tohil
+from Gear.overkill.megakill import Megakill
+from Gear.overkill.overkills_body_armor import OverkillsBodyArmor
+from Gear.overkill.ultrakill import Ultrakill
+from Gear.silas.bullet_storm import BulletStorm
+from Gear.silas.pulse_breaker import PulseBreaker
+from Gear.silas.scythe_claw import ScytheClaw
+from Gear.tanya.flaming_heart import FlamingHeart
+from Gear.tanya.grisha import Grisha
+from Gear.tanya.nightfang import Nightfang
+from Gear.tanya.nightshade_grips import NightshadeGrips
+from Gear.tanya.obsidian_edge import ObsidianEdge
 
 import pandas as pd
 
@@ -87,7 +101,16 @@ if __name__ == "__main__":
             ThanatosMortar(),
             StreetInsignia(),
             StreetMedallion(),
-            UnderworldCrown()
+            UnderworldCrown(),
+            # lt specific gear
+            Megakill(),
+            FlamingHeart(),
+            NightshadeGrips(),
+            ObsidianEdge(),
+            FlameTime(),
+            Tohil(),
+            ScytheClaw(),
+            BulletStorm()
         ],
         sk_added_crit_chance=10,
     )
